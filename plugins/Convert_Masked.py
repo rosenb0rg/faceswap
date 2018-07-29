@@ -22,11 +22,15 @@ class Convert():
         self.match_histogram = match_histogram
         self.mask_type = mask_type.lower() # Choose in 'FaceHullAndRect','FaceHull','Rect'
 
-    def patch_image( self, image, face_detected, size ):
+    # def patch_image( self, image, face_detected, size ):
+    def patch_image( self, image, size ):
 
         image_size = image.shape[1], image.shape[0]
-
-        mat = numpy.array(get_align_mat(face_detected, size, should_align_eyes=False)).reshape(2,3)
+        print ('image_size', image_size)
+        # assign a random value to mat to avoid errors
+        #mat = numpy.array(get_align_mat(face_detected, size, should_align_eyes=False)).reshape(2,3)
+        mat = numpy.array([[0,0,0],[1,1,1]])
+        print ('mat', mat)
 
         if "GAN" not in self.trainer:
             mat = mat * size
@@ -37,9 +41,10 @@ class Convert():
 
         new_face = self.get_new_face(image,mat,size)
 
-        image_mask = self.get_image_mask( image, new_face, face_detected.landmarks_as_xy(), mat, image_size )
+        # image_mask = self.get_image_mask( image, new_face, face_detected.landmarks_as_xy(), mat, image_size )
 
-        return self.apply_new_face(image, new_face, image_mask, mat, image_size, size)
+        # return self.apply_new_face(image, new_face, image_mask, mat, image_size, size)
+        return new_face
 
     def apply_new_face(self, image, new_face, image_mask, mat, image_size, size):
         base_image = numpy.copy( image )
@@ -119,7 +124,9 @@ class Convert():
         return matched
 
     def get_new_face(self, image, mat, size):
-        face = cv2.warpAffine( image, mat, (size,size) )
+        # make the "face" the same as the image
+        face = image
+        # face = cv2.warpAffine( image, mat, (size,size) )
         face = numpy.expand_dims( face, 0 )
         face_clipped = numpy.clip(face[0], 0, 255).astype( image.dtype )
         new_face = None
@@ -132,11 +139,12 @@ class Convert():
         else:
             normalized_face = face / 255.0 * 2 - 1
             fake_output = self.encoder(normalized_face)
+            # print ('fake_output', fake_output)
             if "128" in self.trainer: # TODO: Another hack to switch between 64 and 128
                 fake_output = fake_output[0]
             mask = fake_output[:,:,:, :1]
             new_face = fake_output[:,:,:, 1:]
-            new_face = mask * new_face + (1 - mask) * normalized_face
+            # new_face = mask * new_face + (1 - mask) * normalized_face
             new_face = numpy.clip((new_face[0] + 1) * 255 / 2, 0, 255).astype( image.dtype )
 
         if self.match_histogram:

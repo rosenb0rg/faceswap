@@ -34,10 +34,10 @@ class Convert(object):
             predicts only an image. """
         Utils.set_verbosity(self.args.verbose)
 
-        if not self.alignments.have_alignments_file:
-            self.generate_alignments()
+        # if not self.alignments.have_alignments_file:
+        #     self.generate_alignments()
 
-        self.faces.faces_detected = self.alignments.read_alignments()
+        # self.faces.faces_detected = self.alignments.read_alignments()
 
         model = self.load_model()
         converter = self.load_converter(model)
@@ -97,48 +97,55 @@ class Convert(object):
         """ Prepare the images for conversion """
         filename = ""
         for filename in tqdm(self.images.input_images, file=sys.stdout):
-            if not self.check_alignments(filename):
-                continue
+            # if not self.check_alignments(filename):
+            #     continue
             image = Utils.cv2_read_write('read', filename)
-            faces = self.faces.get_faces_alignments(filename, image)
-            if not faces:
-                continue
+            # faces = self.faces.get_faces_alignments(filename, image)
+            # if not faces:
+            #     continue
 
-            yield filename, image, faces
+            # yield filename, image, faces
+            yield filename, image
 
     def check_alignments(self, filename):
         """ If we have no alignments for this image, skip it """
-        have_alignments = self.faces.have_face(filename)
-        if not have_alignments:
-            tqdm.write("No alignment found for {}, "
-                       "skipping".format(os.path.basename(filename)))
-        return have_alignments
+        # have_alignments = self.faces.have_face(filename)
+        # if not have_alignments:
+        #     tqdm.write("No alignment found for {}, "
+        #                "skipping".format(os.path.basename(filename)))
+        # return have_alignments
+        pass
 
     def convert(self, converter, item):
         """ Apply the conversion transferring faces onto frames """
-        try:
-            filename, image, faces = item
-            skip = self.opts.check_skipframe(filename)
+        filename, image = item
+        image = self.convert_one_face(converter, (filename, image))
+        filename = str(self.output_dir / Path(filename).name)
+        Utils.cv2_read_write('write', filename, image)
+        # try:
+        #     filename, image, faces = item
+        #     skip = self.opts.check_skipframe(filename)
 
-            if not skip:
-                for idx, face in faces:
-                    image = self.convert_one_face(converter,
-                                                  (filename, image, idx, face))
-            if skip != "discard":
-                filename = str(self.output_dir / Path(filename).name)
-                Utils.cv2_read_write('write', filename, image)
-        except Exception as err:
-            print("Failed to convert image: {}. "
-                  "Reason: {}".format(filename, err))
+        #     if not skip:
+        #         for idx, face in faces:
+        #             image = self.convert_one_face(converter,
+        #                                           (filename, image, idx, face))
+        #     if skip != "discard":
+        #         filename = str(self.output_dir / Path(filename).name)
+        #         Utils.cv2_read_write('write', filename, image)
+        # except Exception as err:
+        #     print("Failed to convert image: {}. "
+        #           "Reason: {}".format(filename, err))
 
     def convert_one_face(self, converter, imagevars):
         """ Perform the conversion on the given frame for a single face """
-        filename, image, idx, face = imagevars
+        filename, image = imagevars
+        print ('filename',filename)
 
-        if self.opts.check_skipface(filename, idx):
-            return image
+        # if self.opts.check_skipface(filename, idx):
+        #     return image
 
-        image = self.images.rotate_image(image, face.r)
+        # image = self.images.rotate_image(image, face.r)
         # TODO: This switch between 64 and 128 is a hack for now.
         # We should have a separate cli option for size
 
@@ -146,9 +153,9 @@ class Convert(object):
                        in ('gan128', 'originalhighres')) else 64
 
         image = converter.patch_image(image,
-                                      face,
+                                      # face,
                                       size)
-        image = self.images.rotate_image(image, face.r, reverse=True)
+        # image = self.images.rotate_image(image, face.r, reverse=True)
         return image
 
 
@@ -204,25 +211,27 @@ class OptionalActions(object):
 
     def check_skipframe(self, filename):
         """ Check whether frame is to be skipped """
-        if not self.frame_ranges:
-            return None
-        idx = int(self.imageidxre.findall(filename)[0])
-        skipframe = not any(map(lambda b: b[0] <= idx <= b[1],
-                                self.frame_ranges))
-        if skipframe and self.args.discard_frames:
-            skipframe = "discard"
-        return skipframe
+        # if not self.frame_ranges:
+        #     return None
+        # idx = int(self.imageidxre.findall(filename)[0])
+        # skipframe = not any(map(lambda b: b[0] <= idx <= b[1],
+        #                         self.frame_ranges))
+        # if skipframe and self.args.discard_frames:
+        #     skipframe = "discard"
+        # return skipframe
+        pass
 
     def check_skipface(self, filename, face_idx):
         """ Check whether face is to be skipped """
-        if self.faces_to_swap is None:
-            return False
-        face_name = "{}_{}{}".format(Path(filename).stem,
-                                     face_idx,
-                                     Path(filename).suffix)
-        face_file = Path(self.args.input_aligned_dir) / Path(face_name)
-        skip_face = face_file not in self.faces_to_swap
-        if skip_face:
-            print("face {} for frame {} was deleted, skipping".format(
-                face_idx, os.path.basename(filename)))
-        return skip_face
+        # if self.faces_to_swap is None:
+        #     return False
+        # face_name = "{}_{}{}".format(Path(filename).stem,
+        #                              face_idx,
+        #                              Path(filename).suffix)
+        # face_file = Path(self.args.input_aligned_dir) / Path(face_name)
+        # skip_face = face_file not in self.faces_to_swap
+        # if skip_face:
+        #     print("face {} for frame {} was deleted, skipping".format(
+        #         face_idx, os.path.basename(filename)))
+        # return skip_face
+        pass
