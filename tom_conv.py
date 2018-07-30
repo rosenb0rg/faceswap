@@ -19,9 +19,10 @@ source_number = args.Src
 target_number = args.Targ
 
 character_info = Character(character_name, scene_name, source_number, target_number)
-in_dir = character_info.align_crop_dir()
-out_dir = character_info.align_conv_dir()
-model_dir = character_info.basedir + 'df/model_GAN128/'
+
+in_dir = character_info.align_crop_dir
+out_dir = character_info.align_conv_dir
+model_dir = character_info.model_dir
 
 print (in_dir, out_dir, model_dir)
 
