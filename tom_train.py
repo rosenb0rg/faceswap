@@ -21,7 +21,7 @@ character_name = args.Char
 character_info = Character(character_name, scene='nada', source=000, target=00)
 
 imgA_dir = character_info.imgA_dir
-imgB_dir = character_info.imgB_dir
+imgB_dir = character_info.imgB_crop_dir
 model_dir = character_info.model_dir	
 
 print ('imgA dir\n', imgA_dir,'imgB dir\n', imgB_dir, model_dir)
