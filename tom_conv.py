@@ -24,6 +24,11 @@ in_dir = character_info.align_crop_dir
 out_dir = character_info.align_conv_dir
 model_dir = character_info.model_dir
 
+if not os.path.exists(in_dir):
+	os.makedirs(in_dir)
+if not os.path.exists(out_dir):
+	os.makedirs(out_dir)
+
 print (in_dir, out_dir, model_dir)
 
 os.system("python C:/local/src/faceswap/faceswap.py convert -i %s -o %s --model-dir %s -t GAN128 -b 0" % (in_dir, out_dir, model_dir))

@@ -30,7 +30,7 @@ class Character:
 		self.srcdir = os.path.abspath(base + '/source/' + '%s/%s/' % (scene, name))
 		
 		# subdirectories for workflow elements
-		self.align_png_dir = os.path.abspath(self.aligndir + '/%s/png' % self.full_name)
+		self.align_png_dir = os.path.abspath(self.aligndir + '/%s/obj' % self.full_name)
 		self.align_crop_dir = os.path.abspath(self.aligndir + '/%s/crop' % self.full_name)
 		self.align_conv_dir = os.path.abspath(self.aligndir + '/%s/converted' % self.full_name)
 		self.align_comped_dir = os.path.abspath(self.aligndir + '/%s/comped' % self.full_name)
