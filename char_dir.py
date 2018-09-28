@@ -33,7 +33,7 @@ class Character:
 		self.align_png_dir = os.path.abspath(self.aligndir + '/%s/obj' % self.full_name)
 		self.align_crop_dir = os.path.abspath(self.aligndir + '/%s/crop' % self.full_name)
 		self.align_conv_dir = os.path.abspath(self.aligndir + '/%s/converted' % self.full_name)
-		self.align_comped_dir = os.path.abspath(self.aligndir + '/%s/comped' % self.full_name)
+		self.align_comped_dir = os.path.abspath(self.aligndir + '/%s/comped_b' % self.full_name)
 		self.align_obj_dir = os.path.abspath(self.aligndir + '/%s/obj' % self.full_name)
 
 		# subdirectories for faceswap_mod process

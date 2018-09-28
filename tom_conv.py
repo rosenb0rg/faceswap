@@ -1,6 +1,7 @@
 import os
 import argparse
 from char_dir import *
+import shutil
 
 parser = argparse.ArgumentParser(description='converter!!!')
 parser.add_argument("-s", "--Sce", type=str, required=False, default='in',
@@ -26,6 +27,11 @@ model_dir = character_info.model_dir
 
 if not os.path.exists(in_dir):
 	os.makedirs(in_dir)
+
+if os.path.exists(out_dir):
+	shutil.rmtree(out_dir, ignore_errors=True)
+	os.makedirs(out_dir)
+
 if not os.path.exists(out_dir):
 	os.makedirs(out_dir)
 
